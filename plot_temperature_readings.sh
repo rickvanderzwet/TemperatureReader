@@ -5,8 +5,9 @@
 # Rick van der Zwet <info@rickvanderzwet.nl>
 #
 
+# Split sensor data on per file basis and delete incorrect values
 for sensor in $(awk -F ';' '{print $2}' DHT_DATA_2017_*.csv  | sort -u); do
-	grep -h $sensor DHT_DATA_2017_*.csv  | tr ';' ' ' > sensor-$sensor.txt
+	grep -h $sensor DHT_DATA_2017_*.csv  | tr ';' ' ' | awk '{if ($3 > 10000 && $3 < 70000) print $0}'  > sensor-$sensor.txt
 done
 
 echo "# Sensors in use are"
