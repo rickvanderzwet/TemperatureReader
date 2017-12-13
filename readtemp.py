@@ -18,16 +18,20 @@ while True:
         # 51 01 4b 46 7f ff 0c 10 ab t=21062
         text = fh.read()
     
-      # Retreive t=(\d*) value in milli-degrees
-      secondline = text.split("\n")[1]
-      temperaturedata = secondline.split(" ")[9]
-      temp = int(temperaturedata[2:])
+      crc_valid = False
+      for line in text.split('\n'):
+      	if 'crc=' in line:
+	   crc_valid = 'YES' in line
+	elif 't=' in line:
+      	   # Retreive t=(\d*) value in milli-degrees
+      	   temperaturedata = line.split(" ")[9]
+      	   temp = int(temperaturedata[2:])
   
-      print "sensor", sensor, "=", float(temp) / 1000, "graden."
-    
-      data = [int(time.time()), sensor, temp]
-      writer = csv.writer(output, delimiter=";", lineterminator='\n')
-      writer.writerow(data)
+      # print "sensor", sensor, "=", float(temp) / 1000, "graden. crc_valid=", crc_valid
+      if crc_valid:
+      	data = [int(time.time()), sensor, temp]
+      	writer = csv.writer(output, delimiter=";", lineterminator='\n')
+      	writer.writerow(data)
 
   time.sleep(5)
 
